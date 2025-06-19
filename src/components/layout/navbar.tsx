@@ -8,13 +8,16 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 
-import { HeartIcon, ShoppingCartIcon } from "lucide-react";
+import { getCompanies } from "@/features/dashboard/dashboadrd.queires";
+import { ShoppingCartIcon } from "lucide-react";
 import Link from "next/link";
 import SearchBar from "../common/search-bar";
 import { ThemeToggle } from "../common/theme-toggle";
 import MobileNav from "./mobile-nav";
 
 const Navbar = async () => {
+  const companies = await getCompanies();
+
   return (
     <NavigationMenu
       viewport={false}
@@ -36,73 +39,50 @@ const Navbar = async () => {
 
           {/* Men's Fashion */}
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Categories</NavigationMenuTrigger>
+            <NavigationMenuTrigger>Companies</NavigationMenuTrigger>
             <NavigationMenuContent>
               <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
                 <li className="row-span-3">
                   <NavigationMenuLink asChild>
                     <Link
                       className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none select-none focus:shadow-md"
-                      href="/men/apparel"
+                      href={`/company/${companies[0].slug}/products`}
                     >
                       <div className="mt-4 mb-2 text-lg font-medium">
-                      Electronics Collection
+                        {companies[0].name}
                       </div>
                       <p className="text-muted-foreground text-sm leading-tight">
-                        Discover your unique style with our handpicked
-                        selections for men.
+                        {companies[0].description}
                       </p>
                     </Link>
                   </NavigationMenuLink>
                 </li>
-                <ListItem href="/men/sportswear" title="Sportswear">
-                  Stylish and functional dresses, tops, and bottoms for active
-                  and casual wear.
-                </ListItem>
-                <ListItem href="/men/footwear" title="Footwear">
-                  Explore shoes for every occasion—from casual sneakers to
-                  formal dress shoes.
-                </ListItem>
-                <ListItem href="/men/accessories" title="Accessories">
-                  Elevate your outfit with our range of bags, jewelry, and
-                  statement pieces.
-                </ListItem>
+
+                {companies.slice(1).map((company) => (
+                  <ListItem
+                    href={`/company/${company.slug}/products`}
+                    title={company.name}
+                    key={company.id}
+                  >
+                    {company.description}
+                  </ListItem>
+                ))}
               </ul>
             </NavigationMenuContent>
           </NavigationMenuItem>
-
-          {/* Women's Fashion */}
-          <NavigationMenuItem>
-            <NavigationMenuLink href="/products">Products</NavigationMenuLink>
-          </NavigationMenuItem>
-
-          {/* Kids' Fashion */}
         </NavigationMenuList>
 
         {/* Right MenuList */}
         <NavigationMenuList>
           {/* Search Bar*/}
           <NavigationMenuItem>
-            <SearchBar />
-          </NavigationMenuItem>
-
-          {/* Wishlist */}
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <Link href="/wishlist">
-                <HeartIcon />
-
-                <Badge className="absolute -top-1.5 -right-1.5 size-5.5">
-                  0
-                </Badge>
-              </Link>
-            </NavigationMenuLink>
+            <SearchBar companies={companies} />
           </NavigationMenuItem>
 
           {/* Cart */}
           <NavigationMenuItem>
             <NavigationMenuLink asChild>
-              <Link href="/cart" className="ml-2">
+              <Link href="/cart">
                 <ShoppingCartIcon />
                 <Badge className="absolute -top-1.5 -right-1.5 size-5.5">
                   0

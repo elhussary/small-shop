@@ -3,6 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -13,24 +20,33 @@ import { SearchIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 
-const SearchBar = () => {
+const SearchBar = ({ companies }: { companies: Company[] }) => {
   const router = useRouter();
 
   const [inputValue, setInputValue] = useState("");
+  const [companyId, setCompanyId] = useState<string | undefined>();
+
   const [open, setOpen] = useState(false);
 
   const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     const query = inputValue.trim();
-    const newUrl = query
-      ? `/products?search=${encodeURIComponent(query)}`
-      : "/products";
+
+    if (!companyId) return;
+
+    const searchParams = new URLSearchParams();
+    if (query) searchParams.set("search", query);
+
+    const newUrl = `/company/${companyId}/products${
+      searchParams.toString() ? `?${searchParams.toString()}` : ""
+    }`;
 
     startTransition(() => {
       router.push(newUrl);
-      setInputValue("");
-      setOpen(false);
+      // setInputValue("");
+      // setCompanyId(undefined);
+      // setOpen(false);
     });
   };
 
@@ -50,20 +66,34 @@ const SearchBar = () => {
           <SheetTitle>Search</SheetTitle>
         </SheetHeader>
 
-        <form className="relative" onSubmit={handleSearchSubmit}>
-          <Input
-            type="text"
-            name="q"
-            placeholder="Search products..."
-            className="dark:bg-secondary/50 dark:hover:bg-secondary/70 w-full pl-9 transition-colors"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-          />
+        <form onSubmit={handleSearchSubmit}>
+          <div className="relative flex w-full">
+            {/*  Company Select */}
+            <div className="h-full">
+              <Select value={companyId} onValueChange={setCompanyId}>
+                <SelectTrigger className="h-full w-full rounded-none px-2 text-sm">
+                  <SelectValue placeholder="Select company" />
+                </SelectTrigger>
+                <SelectContent>
+                  {companies.map((company) => (
+                    <SelectItem key={company.id} value={company.slug}>
+                      {company.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
-          <SearchIcon
-            className="text-muted-foreground absolute top-1/2 left-3 -translate-y-1/2 transform"
-            size={18}
-          />
+            <Input
+              type="text"
+              name="q"
+              placeholder="Search products..."
+              autoFocus
+              className="w-full rounded-none focus-visible:ring-0 focus-visible:border-gray-200"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+            />
+          </div>
         </form>
       </SheetContent>
     </Sheet>

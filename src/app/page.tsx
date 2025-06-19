@@ -4,6 +4,7 @@ import { Play } from "lucide-react";
 
 export default async function HomePage() {
   const companies = await getCompanies();
+
   return (
     <div className="min-h-screen">
       {/* Hero Section with Video Carousel */}
