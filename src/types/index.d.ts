@@ -11,4 +11,17 @@ interface Product {
         url: string;
         productId: number;
       }[];
+  companyId: number;
+
+  company?: Company;
+}
+
+interface Company {
+  name: string;
+  description: string | null;
+  slug: string;
+  videoUrl: string;
+  buttonText: string;
+  id: number;
+  createdAt: Date;
 }

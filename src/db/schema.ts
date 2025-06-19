@@ -17,6 +17,9 @@ export const products = pgTable("products", {
   description: text("description"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
+  companyId: integer("company_id")
+    .references(() => companies.id)
+    .notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -34,11 +37,27 @@ export const productImages = pgTable("product_images", {
   url: text("url").notNull(),
 });
 
-// ------ Relations ------
+// Companies Table
+export const companies = pgTable("companies", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull().unique(),
+  description: text("description"),
+  slug: varchar("slug", { length: 255 }).notNull().unique(),
+  videoUrl: text("video_url").notNull(),
+  buttonText: varchar("button_text", { length: 100 }).notNull(),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
 
+// ------ Relations ------
 // -- Product Relations --
-export const productsRelations = relations(products, ({ many }) => ({
+export const productsRelations = relations(products, ({ one, many }) => ({
   images: many(productImages),
+  company: one(companies, {
+    fields: [products.companyId],
+    references: [companies.id],
+  }),
 }));
 
 // -- Product Image Relations --
@@ -47,4 +66,9 @@ export const productImagesRelations = relations(productImages, ({ one }) => ({
     fields: [productImages.productId],
     references: [products.id],
   }),
+}));
+
+// -- Companies Relations --
+export const companiesRelations = relations(companies, ({ many }) => ({
+  products: many(products),
 }));

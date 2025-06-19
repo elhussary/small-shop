@@ -13,4 +13,13 @@ export const productSchema = z.object({
   images: z
     .array(z.union([z.string(), z.instanceof(File)]))
     .min(1, "At least one image is required"),
+  companyId: z.coerce.number().min(1, "Company is required"),
+});
+
+export const companySchema = z.object({
+  name: z.string().min(1, "Name is required"),
+  description: z.string().optional(),
+  slug: z.string(),
+  videoUrl: z.string().url("Video URL must be valid"),
+  buttonText: z.string().min(1, "Button text is required"),
 });

@@ -2,7 +2,7 @@
 
 import { db } from "@/db/drizzle";
 import { isPostgresErrorWithCode, PostgresErrorCode } from "@/db/handleDbError";
-import { productImages, products } from "@/db/schema";
+import { companies, productImages, products } from "@/db/schema";
 import { and, eq, inArray } from "drizzle-orm";
 import { revalidatePath } from "next/cache";
 import { UTApi } from "uploadthing/server";
@@ -14,6 +14,62 @@ function getFileKeyFromUrl(url: string): string | null {
   return parts.length > 1 ? parts[1] : null;
 }
 
+// Companies
+type CompanyFormData = {
+  name: string;
+  description?: string;
+  slug: string;
+  videoUrl: string;
+  buttonText: string;
+};
+
+export async function addCompany(data: CompanyFormData) {
+  try {
+    await db.insert(companies).values(data);
+    revalidatePath("/dashboard/companies");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to add company:", error);
+    return { success: false, error: "Something went wrong." };
+  }
+}
+
+export async function updateCompany(companyId: number, data: CompanyFormData) {
+  try {
+    await db
+      .update(companies)
+      .set({
+        name: data.name,
+        description: data.description,
+        videoUrl: data.videoUrl,
+        buttonText: data.buttonText,
+      })
+      .where(eq(companies.id, companyId));
+
+    revalidatePath("/dashboard/companies");
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to update company:", error);
+    return { success: false, error: "Failed to update company." };
+  }
+}
+
+export async function deleteCompany(companyId: number) {
+  try {
+    await db.delete(companies).where(eq(companies.id, companyId));
+    revalidatePath("/dashboard/companies");
+
+    return { success: true };
+  } catch (error) {
+    console.error("Failed to delete company:", error);
+    return {
+      success: false,
+      error: "Failed to delete company. Please try again.",
+    };
+  }
+}
+
+// Products
 export async function addProduct(
   data: Omit<Product, "id"> & { images: string[] }
 ) {
@@ -25,6 +81,7 @@ export async function addProduct(
         slug: data.slug,
         description: data.description,
         price: data.price,
+        companyId: data.companyId,
       })
       .returning({ id: products.id });
 
@@ -91,6 +148,7 @@ export async function updateProduct(
           slug: data.slug,
           description: data.description,
           price: data.price,
+          companyId: data.companyId,
         })
         .where(eq(products.id, productId));
 

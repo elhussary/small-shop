@@ -18,6 +18,13 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Tooltip,
@@ -39,7 +46,7 @@ import { addProduct } from "../../dashboard.actions";
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-const AddProductDialog = () => {
+const AddProductDialog = ({ companies }: { companies: Company[] }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<ProductFormData>({
@@ -50,6 +57,7 @@ const AddProductDialog = () => {
       description: "",
       slug: "",
       images: [],
+      companyId: undefined,
     },
   });
 
@@ -188,12 +196,44 @@ const AddProductDialog = () => {
               )}
             />
 
+            {/* Company */}
+            <FormField
+              control={control}
+              name="companyId"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Company</FormLabel>
+                  <Select
+                    onValueChange={(value) => field.onChange(Number(value))}
+                    defaultValue={field.value?.toString()}
+                  >
+                    <FormControl className="w-full">
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select a company" />
+                      </SelectTrigger>
+                    </FormControl>
+                    <SelectContent>
+                      {companies.map((company) => (
+                        <SelectItem
+                          key={company.id}
+                          value={company.id.toString()}
+                        >
+                          {company.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Image Uploader */}
             <FormField
               control={control}
               name="images"
               render={({ field }) => (
-                <FormItem>
+                <FormItem className="mt-7 space-y-2">
                   <FormLabel>Product Images</FormLabel>
                   <div className="flex flex-wrap gap-4">
                     {field.value.map((img, i) => (

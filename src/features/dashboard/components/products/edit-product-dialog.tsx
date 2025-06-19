@@ -26,6 +26,13 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { uploadFiles } from "@/lib/uploadthing";
 import { productSchema } from "@/lib/zodSchemas";
 import { generateSlug } from "@/utils/generateSlug";
@@ -40,7 +47,13 @@ import { updateProduct } from "../../dashboard.actions";
 
 type ProductFormData = z.infer<typeof productSchema>;
 
-const EditProductDialog = ({ product }: { product: Product }) => {
+const EditProductDialog = ({
+  product,
+  companies,
+}: {
+  product: Product;
+  companies: Company[];
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   const form = useForm<ProductFormData>({
@@ -54,6 +67,7 @@ const EditProductDialog = ({ product }: { product: Product }) => {
       images: product.images.map((img) =>
         typeof img === "string" ? img : img.url
       ),
+      companyId: product.companyId,
     },
   });
 
@@ -199,6 +213,39 @@ const EditProductDialog = ({ product }: { product: Product }) => {
                 )}
               />
 
+              {/* Company */}
+              <FormField
+                control={form.control}
+                name="companyId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Company</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(Number(value))}
+                      defaultValue={field.value?.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a company" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {companies.map((company) => (
+                          <SelectItem
+                            key={company.id}
+                            value={company.id.toString()}
+                          >
+                            {company.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Image Uploader */}
               <FormField
                 control={form.control}
                 name="images"

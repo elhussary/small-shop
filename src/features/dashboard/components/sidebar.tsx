@@ -9,6 +9,7 @@ import { LayoutDashboard, Package } from "lucide-react";
 
 const sidebarItems = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
+  { name: "Companies", href: "/dashboard/companies", icon: LayoutDashboard },
   { name: "Products", href: "/dashboard/products", icon: Package },
 ];
 
