@@ -2,12 +2,19 @@ import CompanyProducts from "@/components/company-products"; // your UI componen
 import { getCompanyWithProducts } from "@/db/queires";
 import { notFound } from "next/navigation";
 
-interface Props {
-  params: { slug: string };
-  searchParams?: { search?: string };
+interface PageProps {
+  params: Promise<Record<string, string>>;
+  searchParams?: Promise<Record<string, string>>;
 }
-export default async function CompanyProductsPage({ params, searchParams }: Props) {
-  const data = await getCompanyWithProducts(params.slug, searchParams?.search);
+
+export default async function CompanyProductsPage({
+  params,
+  searchParams,
+}: PageProps) {
+  const { slug } = await params;
+  const search = await searchParams?.then((params) => params.search);
+
+  const data = await getCompanyWithProducts(slug, search);
 
   if (!data) {
     notFound();
