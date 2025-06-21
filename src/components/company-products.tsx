@@ -6,6 +6,7 @@ import { getLocalized } from "@/utils/getLocalized";
 import { MessageCircle } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   Carousel,
@@ -74,13 +75,17 @@ export default function CompanyProducts({
                     }
                     className="relative w-full h-[400px] sm:h-[500px] md:h-[600px]"
                   >
-                    <Image
-                      src={typeof image === "object" ? image.url : image}
-                      alt={product.name_en}
-                      fill
-                      loading="lazy"
-                      className="object-contain"
-                    />
+                    <Link
+                      href={`/company/${company.slug}/products/${product.slug}`}
+                    >
+                      <Image
+                        src={typeof image === "object" ? image.url : image}
+                        alt={product.name_en}
+                        fill
+                        loading="lazy"
+                        className="object-contain"
+                      />
+                    </Link>
                   </CarouselItem>
                 ))}
               </CarouselContent>

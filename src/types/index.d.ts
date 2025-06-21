@@ -6,13 +6,11 @@ interface Product {
   description_en?: string | null;
   description_ar?: string | null;
   slug: string;
-  images:
-    | string[]
-    | {
-        id: number;
-        url: string;
-        productId: number;
-      }[];
+  images: {
+    id: number;
+    url: string;
+    productId: number;
+  }[];
   companyId: number;
 
   company?: Company;

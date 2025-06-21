@@ -17,8 +17,10 @@ export async function getCompanyWithProducts(slug: string, search?: string) {
     ? and(
         baseCondition,
         or(
-          ilike(products.name, `%${search}%`),
-          ilike(products.description, `%${search}%`)
+          ilike(products.name_en, `%${search}%`),
+          ilike(products.name_ar, `%${search}%`),
+          ilike(products.description_en, `%${search}%`),
+          ilike(products.description_ar, `%${search}%`)
         )
       )
     : baseCondition;
@@ -32,4 +34,14 @@ export async function getCompanyWithProducts(slug: string, search?: string) {
   });
 
   return { company, products: companyProducts };
+}
+
+export async function getProductBySlug(slug: string) {
+  return await db.query.products.findFirst({
+    where: eq(products.slug, slug),
+    with: {
+      company: true,
+      images: true,
+    },
+  });
 }

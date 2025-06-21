@@ -61,7 +61,7 @@ const Navbar = async () => {
                     <NavigationMenuLink asChild>
                       <Link
                         className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none select-none focus:shadow-md"
-                        href={`/company/${companies[0]?.slug}/products`}
+                        href={`/company/${companies[0]?.slug}`}
                       >
                         <div className="mt-4 mb-2 text-lg font-medium">
                           {getLocalized(companies[0], "name", locale)}
@@ -77,7 +77,7 @@ const Navbar = async () => {
                     <ListItem
                       title={getLocalized(company, "name", locale)}
                       key={company.id}
-                      href={`/company/${company.slug}/products`}
+                      href={`/company/${company.slug}`}
                     >
                       {getLocalized(company, "description", locale)}
                     </ListItem>

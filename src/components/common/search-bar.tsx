@@ -16,11 +16,16 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { getLocalized } from "@/utils/getLocalized";
 import { SearchIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useRouter } from "next/navigation";
 import { startTransition, useState } from "react";
 
 const SearchBar = ({ companies }: { companies: Company[] }) => {
+  const t = useTranslations("dashboard.products");
+  const locale = useLocale();
+
   const router = useRouter();
 
   const [inputValue, setInputValue] = useState("");
@@ -72,12 +77,12 @@ const SearchBar = ({ companies }: { companies: Company[] }) => {
             <div className="h-full">
               <Select value={companyId} onValueChange={setCompanyId}>
                 <SelectTrigger className="h-full w-full rounded-none px-2 text-sm">
-                  <SelectValue placeholder="Select company" />
+                  <SelectValue placeholder={t("productCard.company")} />
                 </SelectTrigger>
                 <SelectContent>
                   {companies.map((company) => (
                     <SelectItem key={company.id} value={company.slug}>
-                      {company.name}
+                      {getLocalized(company, "name", locale)}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -87,7 +92,7 @@ const SearchBar = ({ companies }: { companies: Company[] }) => {
             <Input
               type="text"
               name="q"
-              placeholder="Search products..."
+              placeholder={t("searchPlaceholder")}
               autoFocus
               className="w-full rounded-none focus-visible:ring-0 focus-visible:border-gray-200"
               value={inputValue}
