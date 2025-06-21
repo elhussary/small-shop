@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,7 +25,10 @@ import {
 import { deleteCompany } from "@/features/dashboard/dashboard.actions";
 import { formatDate } from "@/utils/formatDate";
 import { TrashIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
+import { useState } from "react";
 
+import { getLocalized } from "@/utils/getLocalized";
 import { getCompanies } from "../../dashboadrd.queires";
 import EditCompanyDialog from "./edit-company-dialog";
 
@@ -35,13 +36,18 @@ type Companies = NonNullable<Awaited<ReturnType<typeof getCompanies>>>;
 
 const CompaniesTable = ({ companies }: { companies: Companies }) => {
   const [searchTerm, setSearchTerm] = useState("");
+  const locale = useLocale();
+  const t = useTranslations("dashboard.companies");
 
   const filteredCompanies = companies.filter((company) => {
     const search = searchTerm.toLowerCase();
+    const name = getLocalized(company, "name", locale)?.toLowerCase() || "";
+    const desc =
+      getLocalized(company, "description", locale)?.toLowerCase() || "";
+    const btn =
+      getLocalized(company, "buttonText", locale)?.toLowerCase() || "";
     return (
-      company.name.toLowerCase().includes(search) ||
-      company.description?.toLowerCase().includes(search) ||
-      company.buttonText.toLowerCase().includes(search)
+      name.includes(search) || desc.includes(search) || btn.includes(search)
     );
   });
 
@@ -49,7 +55,7 @@ const CompaniesTable = ({ companies }: { companies: Companies }) => {
     <>
       <section className="flex items-center space-x-2 mb-4">
         <Input
-          placeholder="Search companies..."
+          placeholder={t("searchPlaceholder")}
           className="max-w-sm"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -59,29 +65,32 @@ const CompaniesTable = ({ companies }: { companies: Companies }) => {
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Description</TableHead>
-            <TableHead>Slug</TableHead>
-            <TableHead>Button Text</TableHead>
-            <TableHead>Video</TableHead>
-            <TableHead>Created</TableHead>
-            <TableHead>Actions</TableHead>
+            <TableHead>{t("table.companyName")}</TableHead>
+            <TableHead>{t("table.description")}</TableHead>
+            <TableHead>{t("table.slug")}</TableHead>
+            <TableHead>{t("table.buttonText")}</TableHead>
+            <TableHead>{t("table.video")}</TableHead>
+            <TableHead>{t("table.createdAt")}</TableHead>
+            <TableHead>{t("table.actions")}</TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
           {filteredCompanies.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={6} className="text-center">
-                No companies found.
+              <TableCell colSpan={7} className="text-center">
+                {t("table.noCompanies")}
               </TableCell>
             </TableRow>
           ) : (
             filteredCompanies.map((company) => (
               <TableRow key={company.id}>
-                <TableCell className="font-medium">{company.name}</TableCell>
+                <TableCell className="font-medium">
+                  {getLocalized(company, "name", locale)}
+                </TableCell>
+
                 <TableCell className="max-w-[300px] truncate">
-                  {company.description}
+                  {getLocalized(company, "description", locale)}
                 </TableCell>
 
                 <TableCell className="text-muted-foreground text-sm">
@@ -89,7 +98,9 @@ const CompaniesTable = ({ companies }: { companies: Companies }) => {
                 </TableCell>
 
                 <TableCell>
-                  <Badge variant="secondary">{company.buttonText}</Badge>
+                  <Badge variant="secondary">
+                    {getLocalized(company, "buttonText", locale)}
+                  </Badge>
                 </TableCell>
 
                 <TableCell>
@@ -99,7 +110,7 @@ const CompaniesTable = ({ companies }: { companies: Companies }) => {
                     rel="noopener noreferrer"
                     className="text-blue-600 underline text-sm"
                   >
-                    View
+                    {t("actions.view")}
                   </a>
                 </TableCell>
 
@@ -108,30 +119,32 @@ const CompaniesTable = ({ companies }: { companies: Companies }) => {
                 </TableCell>
 
                 <TableCell className="flex gap-2">
-                  {/* Edit */}
                   <EditCompanyDialog company={company} />
 
-                  {/* Delete */}
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button variant="destructive" size="sm">
                         <TrashIcon className="w-4 h-4 mr-1" />
-                        Delete
+                        {t("actions.delete")}
                       </Button>
                     </AlertDialogTrigger>
 
                     <AlertDialogContent>
                       <AlertDialogHeader>
                         <AlertDialogTitle className="text-destructive">
-                          Delete &quot{company.name}&quot?
+                          {t("actions.confirmDelete")} &quot;
+                          {getLocalized(company, "name", locale)}
+                          &quot;
                         </AlertDialogTitle>
+
                         <AlertDialogDescription>
-                          This action cannot be undone and will remove the
-                          company from your records.
+                          {t("actions.deleteWarning")}
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>
+                          {t("actions.cancel")}
+                        </AlertDialogCancel>
                         <AlertDialogAction asChild>
                           <Button
                             onClick={async () => {
@@ -139,7 +152,7 @@ const CompaniesTable = ({ companies }: { companies: Companies }) => {
                             }}
                           >
                             <TrashIcon className="w-4 h-4 mr-1" />
-                            Confirm
+                            {t("actions.confirm")}
                           </Button>
                         </AlertDialogAction>
                       </AlertDialogFooter>

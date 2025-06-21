@@ -13,8 +13,10 @@ import {
 //  Products Table
 export const products = pgTable("products", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull().unique(),
-  description: text("description"),
+  name_en: varchar("name_en", { length: 255 }).notNull(),
+  name_ar: varchar("name_ar", { length: 255 }).notNull(),
+  description_en: text("description_en"),
+  description_ar: text("description_ar"),
   price: decimal("price", { precision: 10, scale: 2 }).notNull(),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
   companyId: integer("company_id")
@@ -37,15 +39,20 @@ export const productImages = pgTable("product_images", {
   url: text("url").notNull(),
 });
 
-// Companies Table
 export const companies = pgTable("companies", {
   id: serial("id").primaryKey(),
-  name: varchar("name", { length: 255 }).notNull().unique(),
-  description: text("description"),
+  name_en: varchar("name_en", { length: 255 }).notNull(),
+  name_ar: varchar("name_ar", { length: 255 }).notNull(),
+  description_en: text("description_en"),
+  description_ar: text("description_ar"),
   slug: varchar("slug", { length: 255 }).notNull().unique(),
   videoUrl: text("video_url").notNull(),
-  buttonText: varchar("button_text", { length: 100 }).notNull(),
+  buttonText_en: varchar("button_text_en", { length: 100 }).notNull(),
+  buttonText_ar: varchar("button_text_ar", { length: 100 }).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
 });

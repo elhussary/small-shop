@@ -34,18 +34,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { uploadFiles } from "@/lib/uploadthing";
-import { productSchema } from "@/lib/zodSchemas";
+import { createProductSchema } from "@/lib/zodSchemas";
 import { generateSlug } from "@/utils/generateSlug";
+import { getLocalized } from "@/utils/getLocalized";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditIcon, ImagePlus, InfoIcon, XIcon } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { z } from "zod";
 import { updateProduct } from "../../dashboard.actions";
-
-type ProductFormData = z.infer<typeof productSchema>;
 
 const EditProductDialog = ({
   product,
@@ -56,13 +56,19 @@ const EditProductDialog = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const form = useForm<ProductFormData>({
-    resolver: zodResolver(productSchema),
+  const locale = useLocale();
+  const t = useTranslations("dashboard.products.form");
+  const schema = createProductSchema(t);
+  type ProductFormData = z.infer<typeof schema>;
 
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: {
-      name: product.name,
+      name_en: product.name_en,
+      name_ar: product.name_ar,
+      description_en: product.description_en,
+      description_ar: product.description_ar,
       price: product.price,
-      description: product.description ?? "",
       slug: product.slug,
       images: product.images.map((img) =>
         typeof img === "string" ? img : img.url
@@ -71,18 +77,16 @@ const EditProductDialog = ({
     },
   });
 
-  const { watch, setValue } = form;
+  const { watch, setValue, control, formState } = form;
 
-  const nameValue = watch("name");
+  const nameEn = watch("name_en");
+
   useEffect(() => {
-    // Only update slug if name is not empty
-    if (nameValue) {
-      setValue("slug", generateSlug(nameValue), { shouldValidate: true });
-    }
-  }, [nameValue, setValue]);
+    setValue("slug", generateSlug(nameEn));
+  }, [nameEn, setValue]);
 
   const onSubmit = async (data: ProductFormData) => {
-    toast.loading("Saving changes...");
+    const toastId = toast.loading(t("actions.editSubmitting"));
 
     try {
       const newImageFiles = data.images.filter(
@@ -108,16 +112,13 @@ const EditProductDialog = ({
       const result = await updateProduct(product.id, finalProductData);
 
       if (result.success) {
-        toast.success("Product updated successfully!");
+        toast.success(t("success.edit"), { id: toastId });
         setIsOpen(false);
       } else {
         toast.error(result.error || "Failed to update product.");
       }
     } catch (err) {
       toast.error("An unexpected error occurred during submission.");
-      console.error(err);
-    } finally {
-      toast.dismiss();
     }
   };
 
@@ -132,10 +133,8 @@ const EditProductDialog = ({
 
         <DialogContent className="max-h-[95vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Edit Product</DialogTitle>
-            <DialogDescription>
-              Make changes to your product details.
-            </DialogDescription>
+            <DialogTitle>{t("editProduct")}</DialogTitle>
+            <DialogDescription>{t("enterDetails")}</DialogDescription>
           </DialogHeader>
 
           <Form {...form}>
@@ -143,15 +142,30 @@ const EditProductDialog = ({
               onSubmit={form.handleSubmit(onSubmit)}
               className="mt-3 space-y-4"
             >
-              {/* Product Name */}
+              {/* Product Name EN */}
               <FormField
-                control={form.control}
-                name="name"
+                control={control}
+                name="name_en"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product Name</FormLabel>
+                    <FormLabel>{t("fields.nameEn")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. Premium T-Shirt" {...field} />
+                      <Input placeholder={t("fields.nameEn")} {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Product Name AR */}
+              <FormField
+                control={control}
+                name="name_ar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("fields.nameAr")}</FormLabel>
+                    <FormControl>
+                      <Input placeholder={t("fields.nameAr")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -160,20 +174,22 @@ const EditProductDialog = ({
 
               {/* Slug */}
               <FormField
-                control={form.control}
+                control={control}
                 name="slug"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center">
-                      URL Slug
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <InfoIcon className="ml-1.5 h-3 w-3 cursor-help" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          Auto-generated from product name
-                        </TooltipContent>
-                      </Tooltip>
+                      {t("fields.slug")}
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <InfoIcon className="ml-1.5 h-3 w-3 cursor-help" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            {t("fields.slugTooltip")}
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
                     </FormLabel>
                     <FormControl>
                       <Input readOnly {...field} />
@@ -185,11 +201,11 @@ const EditProductDialog = ({
 
               {/* Price */}
               <FormField
-                control={form.control}
+                control={control}
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Price</FormLabel>
+                    <FormLabel>{t("fields.price")}</FormLabel>
                     <FormControl>
                       <Input type="number" step="0.01" {...field} />
                     </FormControl>
@@ -198,15 +214,30 @@ const EditProductDialog = ({
                 )}
               />
 
-              {/* Description */}
+              {/* Description EN */}
               <FormField
-                control={form.control}
-                name="description"
+                control={control}
+                name="description_en"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>{t("fields.descriptionEn")}</FormLabel>
                     <FormControl>
-                      <Textarea rows={4} {...field} />
+                      <Textarea rows={3} {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* Description AR */}
+              <FormField
+                control={control}
+                name="description_ar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("fields.descriptionAr")}</FormLabel>
+                    <FormControl>
+                      <Textarea rows={3} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -215,18 +246,18 @@ const EditProductDialog = ({
 
               {/* Company */}
               <FormField
-                control={form.control}
+                control={control}
                 name="companyId"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company</FormLabel>
+                    <FormLabel>{t("fields.company")}</FormLabel>
                     <Select
                       onValueChange={(value) => field.onChange(Number(value))}
                       defaultValue={field.value?.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select a company" />
+                          <SelectValue placeholder={t("fields.company")} />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -235,7 +266,7 @@ const EditProductDialog = ({
                             key={company.id}
                             value={company.id.toString()}
                           >
-                            {company.name}
+                            {getLocalized(company, "name", locale)}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -251,7 +282,7 @@ const EditProductDialog = ({
                 name="images"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Product Images</FormLabel>
+                    <FormLabel>{t("fields.images")}</FormLabel>
                     <div className="flex flex-wrap gap-4">
                       {field.value.map((img, i) => (
                         <div key={i} className="group relative">
@@ -287,9 +318,7 @@ const EditProductDialog = ({
                       <FormControl>
                         <label className="flex h-24 w-24 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed bg-card transition-colors hover:border-primary">
                           <ImagePlus className="h-8 w-8 text-muted-foreground" />
-                          <span className="mt-1 text-xs text-muted-foreground">
-                            Add
-                          </span>
+
                           <input
                             type="file"
                             accept="image/*"
@@ -311,8 +340,14 @@ const EditProductDialog = ({
                 )}
               />
 
-              <Button type="submit" className="w-full !mt-6">
-                Save Changes
+              <Button
+                type="submit"
+                disabled={formState.isSubmitting}
+                className="w-full !mt-6"
+              >
+                {formState.isSubmitting
+                  ? t("actions.editSubmitting")
+                  : t("editProduct")}
               </Button>
             </form>
           </Form>

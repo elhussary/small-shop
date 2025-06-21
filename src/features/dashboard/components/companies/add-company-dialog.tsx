@@ -31,47 +31,56 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { addCompany } from "@/features/dashboard/dashboard.actions";
-import { companySchema } from "@/lib/zodSchemas";
+import { createCompanySchema } from "@/lib/zodSchemas";
 import { generateSlug } from "@/utils/generateSlug";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
-
-type CompanyFormData = z.infer<typeof companySchema>;
 
 const AddCompanyDialog = () => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const form = useForm<CompanyFormData>({
-    resolver: zodResolver(companySchema),
+  const t = useTranslations("dashboard.companies.form");
+  const schema = createCompanySchema(t);
+  type CompanyFormData = z.infer<typeof schema>;
+
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: {
-      name: "",
-      description: "",
+      name_en: "",
+      name_ar: "",
+      description_en: null,
+      description_ar: null,
       slug: "",
       videoUrl: "",
-      buttonText: "",
+      buttonText_en: "",
+      buttonText_ar: "",
     },
   });
 
   const { control, handleSubmit, formState, reset, watch, setValue } = form;
-  const name = watch("name");
+  const nameEn = watch("name_en");
+  useEffect(() => {
+    setValue("slug", generateSlug(nameEn), { shouldValidate: false });
+  }, [nameEn, setValue]);
 
   useEffect(() => {
-    setValue("slug", generateSlug(name), { shouldValidate: true });
-  }, [name, setValue]);
+    setValue("slug", generateSlug(nameEn), { shouldValidate: false });
+  }, [nameEn, setValue]);
 
   const onSubmit = async (data: CompanyFormData) => {
-    const toastId = toast.loading("Adding company...");
+    const toastId = toast.loading(t("actions.submitting"));
+
     try {
       const result = await addCompany(data);
 
       if (result.success) {
-        toast.success("Company added!", { id: toastId });
+        toast.success(t("success.add"), { id: toastId });
         reset();
         setIsOpen(false);
       } else {
         toast.error(result.error || "Failed to add company.", { id: toastId });
       }
     } catch (err) {
-      console.error("Add company error:", err);
       toast.error("Unexpected error. Please try again.", { id: toastId });
     }
   };
@@ -81,24 +90,25 @@ const AddCompanyDialog = () => {
       <DialogTrigger asChild>
         <Button className="gap-2">
           <PlusCircle className="h-4 w-4" />
-          Add Company
+          {t("addCompany")}
         </Button>
       </DialogTrigger>
 
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add New Company</DialogTitle>
-          <DialogDescription>Enter company details below</DialogDescription>
+          <DialogTitle>{t("addNewCompany")}</DialogTitle>
+          <DialogDescription>{t("enterDetails")}</DialogDescription>
         </DialogHeader>
 
         <Form {...form}>
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-3">
+            {/* Name EN */}
             <FormField
               control={control}
-              name="name"
+              name="name_en"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Company Name</FormLabel>
+                  <FormLabel>{t("fields.companyNameEn")}</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g. GreenLife Organics" {...field} />
                   </FormControl>
@@ -107,20 +117,38 @@ const AddCompanyDialog = () => {
               )}
             />
 
+            {/* Name AR */}
+            <FormField
+              control={control}
+              name="name_ar"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("fields.companyNameAr")}</FormLabel>
+                  <FormControl>
+                    <Input
+                      dir="rtl"
+                      placeholder="مثال: جرين لايف أورجانيكس"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Slug */}
             <FormField
               control={form.control}
               name="slug"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel className="flex items-center">
-                    URL Slug
+                    {t("fields.slug")}
                     <Tooltip>
                       <TooltipTrigger asChild>
                         <InfoIcon className="ml-1.5 h-3 w-3 cursor-help" />
                       </TooltipTrigger>
-                      <TooltipContent>
-                        Auto-generated from company name
-                      </TooltipContent>
+                      <TooltipContent>{t("fields.slugTooltip")}</TooltipContent>
                     </Tooltip>
                   </FormLabel>
                   <FormControl>
@@ -131,17 +159,34 @@ const AddCompanyDialog = () => {
               )}
             />
 
+            {/* Description EN */}
             <FormField
               control={control}
-              name="description"
+              name="description_en"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Description</FormLabel>
+                  <FormLabel>{t("fields.descriptionEn")}</FormLabel>
+                  <FormControl>
+                    <Textarea rows={4} {...field} value={field.value || ""} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Description AR */}
+            <FormField
+              control={control}
+              name="description_ar"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("fields.descriptionAr")}</FormLabel>
                   <FormControl>
                     <Textarea
                       rows={4}
+                      dir="rtl"
                       {...field}
-                      placeholder="Write a short description..."
+                      value={field.value || ""}
                     />
                   </FormControl>
                   <FormMessage />
@@ -149,12 +194,13 @@ const AddCompanyDialog = () => {
               )}
             />
 
+            {/* Video URL */}
             <FormField
               control={control}
               name="videoUrl"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Video URL</FormLabel>
+                  <FormLabel>{t("fields.videoUrl")}</FormLabel>
                   <FormControl>
                     <Input placeholder="https://..." {...field} />
                   </FormControl>
@@ -163,14 +209,30 @@ const AddCompanyDialog = () => {
               )}
             />
 
+            {/* Button Text EN */}
             <FormField
               control={control}
-              name="buttonText"
+              name="buttonText_en"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>CTA Button Text</FormLabel>
+                  <FormLabel>{t("fields.buttonTextEn")}</FormLabel>
                   <FormControl>
                     <Input placeholder="e.g. Shop Now" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            {/* Button Text AR */}
+            <FormField
+              control={control}
+              name="buttonText_ar"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>{t("fields.buttonTextAr")}</FormLabel>
+                  <FormControl>
+                    <Input placeholder="مثال: تسوق الآن" dir="rtl" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -182,7 +244,9 @@ const AddCompanyDialog = () => {
               disabled={formState.isSubmitting}
               className="w-full mt-5"
             >
-              {formState.isSubmitting ? "Adding..." : "Add Company"}
+              {formState.isSubmitting
+                ? t("actions.submitting")
+                : t("actions.submit")}
             </Button>
           </form>
         </Form>

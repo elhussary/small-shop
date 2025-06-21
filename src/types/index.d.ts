@@ -1,8 +1,10 @@
 interface Product {
   id: number;
-  name: string;
+  name_en: string;
+  name_ar: string;
   price: string;
-  description?: string | null;
+  description_en?: string | null;
+  description_ar?: string | null;
   slug: string;
   images:
     | string[]
@@ -17,11 +19,15 @@ interface Product {
 }
 
 interface Company {
-  name: string;
-  description: string | null;
+  id: number;
+  name_en: string;
+  name_ar: string;
+  description_en: string | null;
+  description_ar: string | null;
   slug: string;
   videoUrl: string;
-  buttonText: string;
-  id: number;
+  buttonText_en: string;
+  buttonText_ar: string;
   createdAt: Date;
+  updatedAt: Date;
 }

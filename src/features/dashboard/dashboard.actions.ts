@@ -16,16 +16,29 @@ function getFileKeyFromUrl(url: string): string | null {
 
 // Companies
 type CompanyFormData = {
-  name: string;
-  description?: string;
+  name_en: string;
+  name_ar: string;
+  description_en: string | null;
+  description_ar: string | null;
   slug: string;
   videoUrl: string;
-  buttonText: string;
+  buttonText_en: string;
+  buttonText_ar: string;
 };
 
 export async function addCompany(data: CompanyFormData) {
   try {
-    await db.insert(companies).values(data);
+    await db.insert(companies).values({
+      name_en: data.name_en,
+      name_ar: data.name_ar,
+      description_en: data.description_en,
+      description_ar: data.description_ar,
+      slug: data.slug,
+      videoUrl: data.videoUrl,
+      buttonText_en: data.buttonText_en,
+      buttonText_ar: data.buttonText_ar,
+    });
+
     revalidatePath("/dashboard/companies");
     return { success: true };
   } catch (error) {
@@ -39,10 +52,14 @@ export async function updateCompany(companyId: number, data: CompanyFormData) {
     await db
       .update(companies)
       .set({
-        name: data.name,
-        description: data.description,
+        name_en: data.name_en,
+        name_ar: data.name_ar,
+        description_en: data.description_en,
+        description_ar: data.description_ar,
+        slug: data.slug,
         videoUrl: data.videoUrl,
-        buttonText: data.buttonText,
+        buttonText_en: data.buttonText_en,
+        buttonText_ar: data.buttonText_ar,
       })
       .where(eq(companies.id, companyId));
 
@@ -77,9 +94,11 @@ export async function addProduct(
     const [insertedProduct] = await db
       .insert(products)
       .values({
-        name: data.name,
+        name_en: data.name_en,
+        name_ar: data.name_ar,
         slug: data.slug,
-        description: data.description,
+        description_en: data.description_en,
+        description_ar: data.description_ar,
         price: data.price,
         companyId: data.companyId,
       })
@@ -144,9 +163,11 @@ export async function updateProduct(
       await tx
         .update(products)
         .set({
-          name: data.name,
+          name_en: data.name_en,
+          name_ar: data.name_ar,
           slug: data.slug,
-          description: data.description,
+          description_en: data.description_en,
+          description_ar: data.description_ar,
           price: data.price,
           companyId: data.companyId,
         })

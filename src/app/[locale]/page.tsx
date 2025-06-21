@@ -1,8 +1,10 @@
 import VideoCarousel from "@/components/video-carousel";
 import { getCompanies } from "@/features/dashboard/dashboadrd.queires";
 import { Play } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 export default async function HomePage() {
+  const t = await getTranslations("common.features");
   const companies = await getCompanies();
 
   return (
@@ -14,12 +16,9 @@ export default async function HomePage() {
       <section className="py-20">
         <div className="container mx-auto px-6">
           <div className="text-center mb-16">
-            <h3 className="text-4xl font-bold mb-4">
-              Why Choose Our Platform?
-            </h3>
+            <h3 className="text-4xl font-bold mb-4">{t("title")}</h3>
             <p className="text-xl  max-w-3xl mx-auto text-muted-foreground">
-              Discover premium products from top companies, all connected
-              through seamless WhatsApp integration
+              {t("description")}
             </p>
           </div>
 
@@ -29,11 +28,10 @@ export default async function HomePage() {
                 <Play className="w-8 h-8 text-white" />
               </div>
               <h4 className="text-xl font-semibold mb-3 dark:text-black">
-                Video Showcases
+                {t("video.title")}
               </h4>
-              <p className="text-gray-600">
-                Experience products through immersive video presentations
-              </p>
+
+              <p className="text-gray-600">{t("video.description")}</p>
             </div>
 
             <div className="text-center p-6 rounded-xl bg-gradient-to-br from-green-50 to-emerald-50 hover:shadow-lg transition-all duration-300">
@@ -47,11 +45,9 @@ export default async function HomePage() {
                 </svg>
               </div>
               <h4 className="text-xl font-semibold mb-3 dark:text-black">
-                WhatsApp Integration
+                {t("whatsapp.title")}
               </h4>
-              <p className="text-gray-600">
-                Connect instantly with sellers through WhatsApp messaging
-              </p>
+              <p className="text-gray-600">{t("whatsapp.description")}</p>
             </div>
 
             <div className="text-center p-6 rounded-xl bg-gradient-to-br from-purple-50 to-pink-50 hover:shadow-lg transition-all duration-300">
@@ -71,11 +67,10 @@ export default async function HomePage() {
                 </svg>
               </div>
               <h4 className="text-xl font-semibold mb-3 dark:text-black">
-                Multiple Companies
+                {t("companies.title")}
               </h4>
-              <p className="text-gray-600">
-                Browse products from various trusted business partners
-              </p>
+
+              <p className="text-gray-600">{t("companies.description")}</p>
             </div>
           </div>
         </div>

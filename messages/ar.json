@@ -1,0 +1,167 @@
+{
+  "common": {
+    "features": {
+      "title": "لماذا تختار منصتنا؟",
+      "description": "استكشف منتجات مميزة من أفضل الشركات، متصلة بسهولة عبر واتساب",
+
+      "video": {
+        "title": "عروض فيديو",
+        "description": "شاهد المنتجات من خلال عروض فيديو تفاعلية"
+      },
+      "whatsapp": {
+        "title": "تكامل مع واتساب",
+        "description": "تواصل مباشرة مع البائعين عبر رسائل واتساب"
+      },
+      "companies": {
+        "title": "عدة شركات",
+        "description": "تصفح منتجات من شركاء أعمال موثوقين ومتعددين"
+      }
+    },
+
+    "navbar": {
+      "companies": {
+        "title": "الشركات",
+        "empty": "لا توجد شركات متاحة"
+      }
+    }
+  },
+
+  "dashboard": {
+    "title": "لوحة التحكم",
+
+    "sidebar": {
+      "dashboard": "لوحة التحكم",
+      "companies": "الشركات",
+      "products": "المنتجات"
+    },
+
+    "companies": {
+      "title": "الشركات",
+
+      "empty": "لا توجد شركات متاحة",
+
+      "searchPlaceholder": "ابحث عن شركة...",
+
+      "table": {
+        "companyName": "اسم الشركة",
+        "description": "الوصف",
+        "slug": "الرابط",
+        "buttonText": "زر الدعوة",
+        "video": "الفيديو",
+        "createdAt": "تاريخ الإنشاء",
+        "actions": "الإجراءات",
+        "noCompanies": "لا توجد شركات"
+      },
+
+      "form": {
+        "addCompany": "إضافة شركة",
+        "addNewCompany": "إضافة شركة جديدة",
+        "editCompany": "تعديل الشركة",
+        "enterDetails": "أدخل تفاصيل الشركة أدناه",
+
+        "fields": {
+          "companyNameEn": "اسم الشركة (إنجليزي)",
+          "companyNameAr": "اسم الشركة (عربي)",
+          "descriptionEn": "الوصف (إنجليزي)",
+          "descriptionAr": "الوصف (عربي)",
+          "slug": "رابط URL",
+          "slugTooltip": "يتم إنشاؤه تلقائيًا من اسم الشركة",
+          "videoUrl": "رابط الفيديو",
+          "buttonTextEn": "نص زر الدعوة (إنجليزي)",
+          "buttonTextAr": "نص زر الدعوة (عربي)"
+        },
+
+        "actions": {
+          "submit": "أضف الشركة",
+          "submitting": "جاري الإضافة...",
+          "editSubmitting": "جاري التعديل..."
+        },
+
+        "success": {
+          "add": "تمت إضافة الشركة بنجاح",
+          "edit": "تم تعديل الشركة بنجاح"
+        },
+
+        "errors": {
+          "required": "هذا الحقل مطلوب",
+          "invalidUrl": "الرابط غير صالح",
+          "min": "يجب أن يكون طول هذا الحقل على الأقل {{min}} حرفًا",
+          "max": "يجب ألا يتجاوز طول هذا الحقل {{max}} حرفًا"
+        }
+      },
+
+      "actions": {
+        "view": "عرض",
+        "delete": "حذف",
+        "confirmDelete": "هل تريد حذف",
+        "deleteWarning": "لا يمكن التراجع عن هذا الإجراء وسيتم حذف الشركة.",
+        "cancel": "إلغاء",
+        "confirm": "تأكيد"
+      }
+    },
+
+    "products": {
+      "title": "المنتجات",
+      "empty": "لا توجد منتجات متاحة",
+      "searchPlaceholder": "ابحث عن منتج...",
+
+      "productCard": {
+        "productName": "اسم المنتج",
+        "description": "الوصف",
+        "slug": "الرابط",
+        "price": "السعر",
+        "company": "الشركة",
+        "createdAt": "تاريخ الإنشاء",
+        "actions": "الإجراءات",
+        "noProducts": "لا توجد منتجات"
+      },
+
+      "form": {
+        "addProduct": "إضافة منتج",
+        "addNewProduct": "إضافة منتج جديد",
+        "editProduct": "تعديل المنتج",
+        "enterDetails": "أدخل تفاصيل المنتج أدناه",
+
+        "fields": {
+          "nameEn": "اسم المنتج (إنجليزي)",
+          "nameAr": "اسم المنتج (عربي)",
+          "descriptionEn": "الوصف (إنجليزي)",
+          "descriptionAr": "الوصف (عربي)",
+          "slug": "رابط URL",
+          "slugTooltip": "يتم إنشاؤه تلقائيًا من اسم المنتج",
+          "price": "السعر",
+          "company": "الشركة",
+          "images": "صور المنتج"
+        },
+
+        "actions": {
+          "submit": "أضف المنتج",
+          "submitting": "جاري الإضافة...",
+          "editSubmitting": "جاري التعديل..."
+        },
+
+        "success": {
+          "add": "تمت إضافة المنتج بنجاح",
+          "edit": "تم تعديل المنتج بنجاح"
+        },
+
+        "errors": {
+          "required": "هذا الحقل مطلوب",
+          "invalidUrl": "الرابط غير صالح",
+          "invalidPriceFormat": "تنسيق السعر غير صالح",
+          "priceGreaterThanZero": "يجب أن يكون السعر أكبر من 0",
+          "atLeastOneImage": "يجب إضافة صورة واحدة على الأقل"
+        }
+      },
+
+      "actions": {
+        "view": "عرض",
+        "delete": "حذف",
+        "confirmDelete": "هل تريد حذف",
+        "deleteWarning": "لا يمكن التراجع عن هذا الإجراء وسيتم حذف المنتج.",
+        "cancel": "إلغاء",
+        "confirm": "تأكيد"
+      }
+    }
+  }
+}

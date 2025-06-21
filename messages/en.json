@@ -1,0 +1,167 @@
+{
+  "common": {
+    "features": {
+      "title": "Why Choose Our Platform?",
+      "description": "Discover premium products from top companies, all connected through seamless WhatsApp integration",
+
+      "video": {
+        "title": "Video Showcases",
+        "description": "Experience products through immersive video presentations"
+      },
+      "whatsapp": {
+        "title": "WhatsApp Integration",
+        "description": "Connect instantly with sellers through WhatsApp messaging"
+      },
+      "companies": {
+        "title": "Multiple Companies",
+        "description": "Browse products from various trusted business partners"
+      }
+    },
+
+    "navbar": {
+      "companies": {
+        "title": "Companies",
+        "empty": "No companies available"
+      }
+    }
+  },
+
+  "dashboard": {
+    "title": "Dashboard",
+
+    "sidebar": {
+      "dashboard": "Dashboard",
+      "companies": "Companies",
+      "products": "Products"
+    },
+
+    "companies": {
+      "title": "Companies",
+
+      "empty": "No companies available",
+
+      "searchPlaceholder": "Search companies...",
+
+      "table": {
+        "companyName": "Company Name",
+        "description": "Description",
+        "slug": "Slug",
+        "buttonText": "Button Text",
+        "video": "Video",
+        "createdAt": "Created",
+        "actions": "Actions",
+        "noCompanies": "No companies found."
+      },
+
+      "form": {
+        "addCompany": "Add Company",
+        "addNewCompany": "Add New Company",
+        "editCompany": "Edit Company",
+        "enterDetails": "Enter company details below",
+
+        "fields": {
+          "companyNameEn": "Company Name (English)",
+          "companyNameAr": "Company Name (Arabic)",
+          "descriptionEn": "Description (English)",
+          "descriptionAr": "Description (Arabic)",
+          "slug": "URL Slug",
+          "slugTooltip": "Automatically generated from company name",
+          "videoUrl": "Video URL",
+          "buttonTextEn": "CTA Button Text (English)",
+          "buttonTextAr": "CTA Button Text (Arabic)"
+        },
+
+        "actions": {
+          "submit": "Add Company",
+          "submitting": "Submitting...",
+          "editSubmitting": "Saving changes..."
+        },
+
+        "success": {
+          "add": "Company added successfully",
+          "edit": "Company updated successfully"
+        },
+
+        "errors": {
+          "required": "This field is required",
+          "invalidUrl": "Invalid URL",
+          "min": "Minimum length is {{min}} characters",
+          "max": "Maximum length is {{max}} characters"
+        }
+      },
+
+      "actions": {
+        "view": "View",
+        "delete": "Delete",
+        "confirmDelete": "Delete",
+        "deleteWarning": "This action cannot be undone and will remove the company.",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      }
+    },
+
+    "products": {
+      "title": "Products",
+      "empty": "No products available",
+      "searchPlaceholder": "Search for a product...",
+
+      "productCard": {
+        "productName": "Product Name",
+        "description": "Description",
+        "slug": "URL Slug",
+        "price": "Price",
+        "company": "Company",
+        "createdAt": "Created At",
+        "actions": "Actions",
+        "noProducts": "No products found"
+      },
+
+      "form": {
+        "addProduct": "Add Product",
+        "addNewProduct": "Add New Product",
+        "editProduct": "Edit Product",
+        "enterDetails": "Enter the product details below",
+
+        "fields": {
+          "nameEn": "Product Name (English)",
+          "nameAr": "Product Name (Arabic)",
+          "descriptionEn": "Description (English)",
+          "descriptionAr": "Description (Arabic)",
+          "slug": "URL Slug",
+          "slugTooltip": "Automatically generated from product name",
+          "price": "Price",
+          "company": "Company",
+          "images": "Product Images"
+        },
+
+        "actions": {
+          "submit": "Add Product",
+          "submitting": "Adding...",
+          "editSubmitting": "Saving changes..."
+        },
+
+        "success": {
+          "add": "Product added successfully",
+          "edit": "Product updated successfully"
+        },
+
+        "errors": {
+          "required": "This field is required",
+          "invalidUrl": "Invalid URL",
+          "invalidPriceFormat": "Invalid price format",
+          "priceGreaterThanZero": "Price must be greater than 0",
+          "atLeastOneImage": "At least one image is required"
+        }
+      },
+
+      "actions": {
+        "view": "View",
+        "delete": "Delete",
+        "confirmDelete": "Do you want to delete",
+        "deleteWarning": "This action cannot be undone and the product will be deleted.",
+        "cancel": "Cancel",
+        "confirm": "Confirm"
+      }
+    }
+  }
+}

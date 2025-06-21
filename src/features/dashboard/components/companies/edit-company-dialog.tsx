@@ -2,6 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { EditIcon, InfoIcon } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -33,47 +34,49 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { updateCompany } from "@/features/dashboard/dashboard.actions";
-import { companySchema } from "@/lib/zodSchemas";
+import { createCompanySchema } from "@/lib/zodSchemas";
 import { generateSlug } from "@/utils/generateSlug";
-
-type CompanyFormData = z.infer<typeof companySchema>;
 
 const EditCompanyDialog = ({ company }: { company: Company }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const t = useTranslations("dashboard.companies.form");
+  const schema = createCompanySchema(t);
+  type CompanyFormData = z.infer<typeof schema>;
 
-  const form = useForm<CompanyFormData>({
-    resolver: zodResolver(companySchema),
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: {
-      name: company.name,
+      name_en: company.name_en,
+      name_ar: company.name_ar,
       slug: company.slug,
-      description: company.description || "",
+      description_en: company.description_en || "",
+      description_ar: company.description_ar || "",
       videoUrl: company.videoUrl,
-      buttonText: company.buttonText,
+      buttonText_en: company.buttonText_en,
+      buttonText_ar: company.buttonText_ar,
     },
   });
 
-  const { watch, setValue } = form;
-  const name = watch("name");
+  const nameEn = form.watch("name_en");
 
   useEffect(() => {
-    setValue("slug", generateSlug(name), { shouldValidate: true });
-  }, [name, setValue]);
+    form.setValue("slug", generateSlug(nameEn), { shouldValidate: true });
+  }, [nameEn, form.setValue]);
 
   const onSubmit = async (data: CompanyFormData) => {
-    toast.loading("Saving company...");
+    const toastId = toast.loading(t("actions.editSubmitting"));
     try {
       const result = await updateCompany(company.id, data);
       if (result.success) {
-        toast.success("Company updated!");
+        toast.success(t("success.edit"), { id: toastId });
         setIsOpen(false);
       } else {
-        toast.error(result.error || "Failed to update company.");
+        toast.error(result.error || "Failed to update company.", {
+          id: toastId,
+        });
       }
     } catch (err) {
-      toast.error("Unexpected error occurred.");
-      console.error(err);
-    } finally {
-      toast.dismiss();
+      toast.error("Unexpected error.", { id: toastId });
     }
   };
 
@@ -85,28 +88,43 @@ const EditCompanyDialog = ({ company }: { company: Company }) => {
             className="inline-flex items-center justify-center rounded border px-3 py-1 text-sm gap-1.5"
             aria-label="Edit Company"
           >
-            <EditIcon className="h-4 w-4" /> Edit
+            <EditIcon className="h-4 w-4" />{" "}
+            {t("editCompany", { defaultValue: "Edit" })}
           </button>
         </DialogTrigger>
 
-        <DialogContent className="max-h-[90vh] overflow-y-auto">
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle>Edit Company</DialogTitle>
-            <DialogDescription>
-              Update the company information below.
-            </DialogDescription>
+            <DialogTitle>{t("editCompany")}</DialogTitle>
+            <DialogDescription>{t("enterDetails")}</DialogDescription>
           </DialogHeader>
 
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-4 mt-3"
+            >
               <FormField
                 control={form.control}
-                name="name"
+                name="name_en"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Company Name</FormLabel>
+                    <FormLabel>{t("fields.companyNameEn")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. TechFlow Solutions" {...field} />
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="name_ar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("fields.companyNameAr")}</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -119,13 +137,13 @@ const EditCompanyDialog = ({ company }: { company: Company }) => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel className="flex items-center">
-                      URL Slug
+                      {t("fields.slug")}
                       <Tooltip>
                         <TooltipTrigger asChild>
                           <InfoIcon className="ml-1.5 h-3 w-3 cursor-help" />
                         </TooltipTrigger>
                         <TooltipContent>
-                          Auto-generated from company name
+                          {t("fields.slugTooltip")}
                         </TooltipContent>
                       </Tooltip>
                     </FormLabel>
@@ -139,12 +157,25 @@ const EditCompanyDialog = ({ company }: { company: Company }) => {
 
               <FormField
                 control={form.control}
-                name="description"
+                name="description_en"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Description</FormLabel>
+                    <FormLabel>{t("fields.descriptionEn")}</FormLabel>
                     <FormControl>
-                      <Textarea rows={3} {...field} />
+                      <Textarea rows={3} {...field} value={field.value || ""} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="description_ar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("fields.descriptionAr")}</FormLabel>
+                    <FormControl>
+                      <Textarea rows={3} {...field} value={field.value || ""} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -156,9 +187,9 @@ const EditCompanyDialog = ({ company }: { company: Company }) => {
                 name="videoUrl"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Video URL</FormLabel>
+                    <FormLabel>{t("fields.videoUrl")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="https://..." {...field} />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -167,12 +198,25 @@ const EditCompanyDialog = ({ company }: { company: Company }) => {
 
               <FormField
                 control={form.control}
-                name="buttonText"
+                name="buttonText_en"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Button Text</FormLabel>
+                    <FormLabel>{t("fields.buttonTextEn")}</FormLabel>
                     <FormControl>
-                      <Input placeholder="e.g. View Products" {...field} />
+                      <Input {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="buttonText_ar"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("fields.buttonTextAr")}</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -180,7 +224,7 @@ const EditCompanyDialog = ({ company }: { company: Company }) => {
               />
 
               <Button type="submit" className="w-full mt-4">
-                Save Changes
+                {t("editCompany")}
               </Button>
             </form>
           </Form>

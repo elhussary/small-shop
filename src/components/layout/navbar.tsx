@@ -9,13 +9,20 @@ import {
 } from "@/components/ui/navigation-menu";
 
 import { getCompanies } from "@/features/dashboard/dashboadrd.queires";
+
+import { getLocalized } from "@/utils/getLocalized";
 import { ShoppingCartIcon } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
 import Link from "next/link";
+import LanguageSwitcher from "../common/language-switcher";
 import SearchBar from "../common/search-bar";
 import { ThemeToggle } from "../common/theme-toggle";
 import MobileNav from "./mobile-nav";
 
 const Navbar = async () => {
+  const locale = await getLocale();
+
+  const t = await getTranslations("common.navbar");
   const companies = await getCompanies();
 
   return (
@@ -39,41 +46,55 @@ const Navbar = async () => {
 
           {/* Men's Fashion */}
           <NavigationMenuItem>
-            <NavigationMenuTrigger>Companies</NavigationMenuTrigger>
-            <NavigationMenuContent>
-              <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
-                <li className="row-span-3">
-                  <NavigationMenuLink asChild>
-                    <Link
-                      className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none select-none focus:shadow-md"
-                      href={`/company/${companies[0].slug}/products`}
-                    >
-                      <div className="mt-4 mb-2 text-lg font-medium">
-                        {companies[0].name}
-                      </div>
-                      <p className="text-muted-foreground text-sm leading-tight">
-                        {companies[0].description}
-                      </p>
-                    </Link>
-                  </NavigationMenuLink>
-                </li>
+            <NavigationMenuTrigger>
+              {t("companies.title")}
+            </NavigationMenuTrigger>
 
-                {companies.slice(1).map((company) => (
-                  <ListItem
-                    href={`/company/${company.slug}/products`}
-                    title={company.name}
-                    key={company.id}
-                  >
-                    {company.description}
-                  </ListItem>
-                ))}
-              </ul>
+            <NavigationMenuContent>
+              {companies.length === 0 ? (
+                <div className="p-4 text-muted-foreground text-nowrap">
+                  {t("companies.empty")}
+                </div>
+              ) : (
+                <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+                  <li className="row-span-3">
+                    <NavigationMenuLink asChild>
+                      <Link
+                        className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-gradient-to-b p-6 no-underline outline-none select-none focus:shadow-md"
+                        href={`/company/${companies[0]?.slug}/products`}
+                      >
+                        <div className="mt-4 mb-2 text-lg font-medium">
+                          {getLocalized(companies[0], "name", locale)}
+                        </div>
+                        <p className="text-muted-foreground text-sm leading-tight">
+                          {getLocalized(companies[0], "description", locale)}
+                        </p>
+                      </Link>
+                    </NavigationMenuLink>
+                  </li>
+
+                  {companies.slice(1).map((company) => (
+                    <ListItem
+                      title={getLocalized(company, "name", locale)}
+                      key={company.id}
+                      href={`/company/${company.slug}/products`}
+                    >
+                      {getLocalized(company, "description", locale)}
+                    </ListItem>
+                  ))}
+                </ul>
+              )}
             </NavigationMenuContent>
           </NavigationMenuItem>
         </NavigationMenuList>
 
         {/* Right MenuList */}
         <NavigationMenuList>
+          {/* Language Switcher */}
+          <NavigationMenuItem>
+            <LanguageSwitcher />
+          </NavigationMenuItem>
+
           {/* Search Bar*/}
           <NavigationMenuItem>
             <SearchBar companies={companies} />

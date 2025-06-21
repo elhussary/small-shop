@@ -8,11 +8,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import { getLocalized } from "@/utils/getLocalized";
 import { Pause, Play } from "lucide-react";
+import { useLocale } from "next-intl";
 import Link from "next/link";
 import { useRef, useState } from "react";
 
 const VideoCarousel = ({ companies }: { companies: Company[] }) => {
+  const locale = useLocale();
+
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPlaying, setIsPlaying] = useState(true);
   const videoRefs = useRef<(HTMLVideoElement | null)[]>([]);
@@ -57,15 +61,15 @@ const VideoCarousel = ({ companies }: { companies: Company[] }) => {
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="text-center text-white max-w-4xl px-6">
                   <h2 className="text-6xl font-bold mb-6 animate-fade-in">
-                    {company.name}
+                    {getLocalized(company, "name", locale)}
                   </h2>
                   <p className="text-xl mb-8 opacity-90 animate-fade-in-delay">
-                    {company.description}
+                    {getLocalized(company, "description", locale)}
                   </p>
 
                   <Link href={`/company/${company.slug}/products`} passHref>
                     <Button size="lg" className="text-lg font-semibold">
-                      {company.buttonText}
+                      {getLocalized(company, "buttonText", locale)}
                     </Button>
                   </Link>
                 </div>

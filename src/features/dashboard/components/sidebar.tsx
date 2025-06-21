@@ -6,15 +6,21 @@ import { usePathname } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, Package } from "lucide-react";
-
-const sidebarItems = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
-  { name: "Companies", href: "/dashboard/companies", icon: LayoutDashboard },
-  { name: "Products", href: "/dashboard/products", icon: Package },
-];
+import { useTranslations } from "next-intl";
 
 const Sidebar = () => {
+  const t = useTranslations("dashboard.sidebar");
   const pathname = usePathname();
+
+  const sidebarItems = [
+    { name: t("dashboard"), href: "/dashboard", icon: LayoutDashboard },
+    {
+      name: t("companies"),
+      href: "/dashboard/companies",
+      icon: LayoutDashboard,
+    },
+    { name: t("products"), href: "/dashboard/products", icon: Package },
+  ];
 
   return (
     <aside className="bg-background w-52 border-r">
